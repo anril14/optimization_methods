@@ -1,62 +1,83 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-rounding_value=3
-point = 0
+class Function():
+    """Function Class"""
 
-def f(x):
-    return -np.exp(-x) * np.log(x)
+    def __init__(self, rounding_value = 3, point = None):
+        self.rounding_value = rounding_value
+        self.point = point
+        self.eps = 10 ** - rounding_value
 
-def golden_count(i = -1, a=0.1,b=3, eps = 10**-rounding_value, golden = (-1 + 5 ** 0.5) / 2 ):
-    if i==-1:
-        print('Golden count method')
-    global point
-    i += 1
-    c1 = a + golden * (a + golden * (b - a) - a)
-    c2 = a + golden * (b - a)
-    print("i=", i, "c=", round((a + golden * (b - a)), rounding_value), "a=", round(a, rounding_value),
-          "b=", round(b, rounding_value), "c1=", round(c1, rounding_value), "c2=",
-          round(c2, rounding_value), "f1=", round(f(c1), rounding_value),
-          "f2=", round(f(c2), rounding_value))
-    if f(c1) < f(c2):
-        b = c2
-    else:
-        a = c1
-    if (abs(b) - abs(a)) > eps:
-        golden_count(i,a,b)
-    else:
-        print((a + b) / 2, f((a + b) / 2),'\n')
-        point = (a + b) / 2
+    def f(self,x):
+        return -np.exp(-x) * np.log(x)
 
-def half_count(i = -1, a=0.1,b=3, eps = 1 * 10**-rounding_value ):
-    if i==-1:
-        print('Half count method')
-    global point
-    delta = (abs(b) - abs(a)) * 0.0001
-    i += 1
-    c = (a + b) / 2
-    c1 = c - delta
-    c2 = c + delta
-    print("i=", i, "c=", round(c, rounding_value), "a=", round(a, rounding_value),
-          "b=", round(b, rounding_value), "c1=", round(c - delta, rounding_value), "c2=",
-          round(c + delta, rounding_value), "f1=", round(f(c - delta), rounding_value),
-          "f2=", round(f(c + delta), rounding_value))
-    if f(c1) < f(c2):
-        b = c2
-    else:
-        a = c1
-    if (abs(b) - abs(a)) > eps:
-        half_count(i,a,b)
-    else:
-        print((a + b) / 2, f((a + b) / 2),'\n')
-        point=(a+b)/2
+    def golden_count(self, i = -1, a=0.1, b=3 , golden =(-1 + 5 ** 0.5) / 2):
+        """Golden count method"""
 
-half_count()
-golden_count()
+        if i==-1:
+            print('Golden count method')
+        i += 1
+        c1 = a + golden * (a + golden * (b - a) - a)
+        c2 = a + golden * (b - a)
+        f_c1 = self.f(c1)
+        f_c2 = self.f(c2)
+        print(f"i={i}, a={round(a, self.rounding_value)}, "
+              f"b={round(b, self.rounding_value)}, "
+              f"c1={round(c1, self.rounding_value)}, "
+              f"c2={round(c2, self.rounding_value)}, "
+              f"f1={round(f_c1, self.rounding_value)}, "
+              f"f2={round(f_c2, self.rounding_value)}")
+        if f_c1 < f_c2:
+            b = c2
+        else:
+            a = c1
+        if (abs(b) - abs(a)) > self.eps:
+            self.golden_count(i,a,b)
+        else:
+            print((a + b) / 2, self.f((a + b) / 2),'\n')
+            self.point = (a + b) / 2
 
-plt.axhline(0, color='black', linewidth=.5, zorder=0)
-plt.axvline(0, color='black', linewidth=.5, zorder=0)
-values = np.linspace(0.1,3,10000)
-plt.plot(values,f(values), color = 'orange', zorder=1)
-plt.scatter(point,f(point), color = 'darkblue', zorder=2)
-plt.show()
+    def half_count(self, i = -1, a=0.1,b=3):
+        """Half count method"""
+
+        if i==-1:
+            print('Half count method')
+        delta = (abs(b) - abs(a)) * 0.0001
+        i += 1
+        c = (a + b) / 2
+        c1 = c - delta
+        c2 = c + delta
+        f_c1 = self.f(c1)
+        f_c2 = self.f(c2)
+        print(f"i={i}, c={round(c, self.rounding_value)}, "
+              f"a={round(a, self.rounding_value)}, "
+              f"b={round(b, self.rounding_value)}, "
+              f"c1={round(c1, self.rounding_value)}, "
+              f"c2={round(c2, self.rounding_value)}, "
+              f"f1={round(f_c1, self.rounding_value)}, "
+              f"f2={round(f_c2, self.rounding_value)}")
+        if f_c1 < f_c2:
+            b = c2
+        else:
+            a = c1
+        if (abs(b) - abs(a)) > self.eps:
+            self.half_count(i,a,b)
+        else:
+            print((a + b) / 2, self.f((a + b) / 2),'\n')
+            self.point = (a + b) / 2
+
+    def draw(self):
+        """Draws plot with function and minimal value point"""
+
+        plt.axhline(0, color='black', linewidth=.5, zorder=0)
+        plt.axvline(0, color='black', linewidth=.5, zorder=0)
+        values = np.linspace(0.1,3,10000)
+        plt.plot(values,self.f(values), color = 'orange', zorder=1)
+        plt.scatter(self.point, self.f(self.point), color ='darkblue', zorder=2)
+        plt.show()
+
+function = Function(3,0)
+function.half_count()
+function.golden_count()
+function.draw()
