@@ -17,7 +17,7 @@ def hooke_jeeves(i=-1, x1=3.0, x2=3.0, dx1 = 1.0, dx2 = 1.0, delta = 2.0, acc = 
     fx0 = f(x1, x2)
     i += 1
     if i == 0:
-        plt.scatter(x1, x2, color='black', zorder=2)
+        plt.scatter(x1, x2, color='blue', zorder=3)
 
     def check_x1():
         nonlocal dx1, dx2, eps, x1, x2
