@@ -26,6 +26,8 @@ class Solution():
         self.eps = eps
 
     def f(self, x1,x2):
+        """Function itself"""
+
         return (x1-7)**2 + (x2/3-4)**2
 
     def showplot(self):
@@ -39,7 +41,10 @@ class Solution():
         plt.show()
 
     @recTime
-    def hooke_jeeves(self,i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0, delta = 2.0, acc = 2.2, eps=0.001):
+    def hooke_jeeves(self,i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
+                     delta = 2.0, acc = 2.2, eps=0.001):
+        """Hooke-jeevs method itself"""
+
         point = dict({'x1': x1, 'x2': x2})
         fx0 = self.f(x1, x2)
         i+=1
@@ -47,6 +52,8 @@ class Solution():
             plt.scatter(x1, x2, color='blue', zorder=3)
 
         def check_x1():
+            """Check first coordinate move"""
+
             nonlocal dx1,dx2, x1, x2
             print(f'\niteration: {i}\nNOW CHECKING X1: X1 {x1} X2 {x2} dX1 {dx1} dX2 {dx2}')
             if self.f(x1 + dx1,x2) < fx0:
@@ -61,6 +68,8 @@ class Solution():
                 check_x2()
 
         def check_x2():
+            """Check second coordinate move"""
+
             nonlocal dx1,dx2, eps, x1, x2, point
             print(f'NOW CHECKING X2: X1 {x1} X2 {x2} dX1 {dx1} dX2 {dx2}')
             if self.f(x1 , x2 + dx2) < fx0:
@@ -84,9 +93,12 @@ class Solution():
                 draw('red', 3)
 
         def acc_step():
+            """Acceleration step"""
+
             nonlocal x1,x2,point
             print(f'VALUES BEFORE STEP: X1 {x1} X2 {x2}')
-            if self.f(x1,x2) > self.f(  (x1-point['x1']) * acc + point['x1'],  (x1-point['x2'])* acc +point['x2']  ):
+            if self.f(x1,x2) > self.f(  (x1-point['x1']) * acc + point['x1'],
+                                        (x1-point['x2'])* acc +point['x2']):
                 x1 = (x1-point['x1']) * acc + point['x1']
                 x2 = (x2-point['x2']) * acc + point['x2']
                 print('BOTH WAS CHANGED')
@@ -99,6 +111,8 @@ class Solution():
             print(f'*VALUES AFTER STEP: X1 {x1} X2 {x2}')
 
         def draw(color: str, order: int):
+            """Draw new point and line to it"""
+
             nonlocal x1,x2,point
             print(f'DRAW POINT {x1} {x2}')
             plt.scatter(x1, x2, color=color, zorder=order)
@@ -110,4 +124,4 @@ class Solution():
 function = Solution()
 function.hooke_jeeves()
 function.showplot()
-print(total_time)
+print(f'Total working time: {total_time}s')
