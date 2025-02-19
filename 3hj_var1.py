@@ -1,127 +1,117 @@
-import time, datetime
+import time
 import matplotlib.pyplot as plt
 import numpy as np
-from functools import wraps
 
-def recTime(func):
-    global total_time
-    total_time = 0
+def f(x1,x2):
+    return 4*x1**2 + 5*x2**2 - 3*x1*x2 + 9*x1 - 2*x2 + 5
 
-    def wrapper(*args, **kwargs):
-        """Counts time in seconds of other func working"""
+x1space = np.linspace(-5,5,40)
+x2space = np.linspace(-5,5,40)
+X1, X2 = np.meshgrid(x1space, x2space)
+z = f(X1, X2)
 
-        global total_time
-        start = datetime.datetime.now()
-        func(*args, **kwargs)
-        done = datetime.datetime.now() - start
-        total_time += done.total_seconds()
-    return wrapper
+plt.ion()
+fig, ax = plt.subplots()
 
-class Solution():
-    """Function class"""
+fig.set_layout_engine("tight")
+ax.contour(x1space,x2space,z,20,zorder = 1)
 
-    def __init__(self, delta = 2.0, acc = 2.2, eps = 0.001):
-        self.delta = delta
-        self.acc = acc
-        self.eps = eps
+ax.grid(True)
 
-    def f(self, x1,x2):
-        """Function itself"""
+plt.axhline(0, color='black', linewidth=1, zorder=2)
+plt.axvline(0, color='black', linewidth=1, zorder=2)
 
-        return 4*x1**2 + 5*x2**2 - 3*x1*x2 + 9*x1 - 2*x2 + 5
+def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
+                 delta = 2.0, acc = 2.2, eps=0.001):
+    point = dict({'x1': x1, 'x2': x2})
+    fx0 = f(x1, x2)
+    i += 1
+    if i == 0:
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
-    def showplot(self):
-        x1space = np.linspace(-20, 20, 40)
-        x2space = np.linspace(-20, 20, 40)
-        X1, X2 = np.meshgrid(x1space, x2space)
-        z = self.f(X1, X2)
-        plt.contour(x1space, x2space, z, 20, zorder=1)
-        plt.axhline(0, color='black', linewidth=.5, zorder=0)
-        plt.axvline(0, color='black', linewidth=.5, zorder=0)
-        plt.show()
+        time.sleep(1.0)
+        plt.scatter(x1, x2, color='blue', zorder=3)
 
-    @recTime
-    def hooke_jeeves(self,i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
-                     delta = 2.0, acc = 2.2, eps=0.001):
-        """Hooke-jeevs method itself"""
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
-        point = dict({'x1': x1, 'x2': x2})
-        fx0 = self.f(x1, x2)
-        i+=1
-        if i == 0:
-            plt.scatter(x1, x2, color='blue', zorder=3)
+        time.sleep(1.0)
+        plt.draw()
 
-        def check_x1():
-            """Check first coordinate move"""
+    def check_x1():
+        nonlocal dx1, dx2, eps, x1, x2
+        print(f'\niteration: {i}\nNOW CHECKING X1: X1 {x1} X2 {x2}'
+              f' dX1 {dx1} dX2 {dx2}')
+        if f(x1 + dx1, x2) < fx0:
+            x1 = x1 + dx1
+            print('X1 UP TO:', x1)
+            check_x2()
+        elif f(x1 - dx1, x2) < fx0:
+            x1 = x1 - dx1
+            print('X1 DOWN TO:', x1)
+            check_x2()
+        else:
+            check_x2()
 
-            nonlocal dx1,dx2, x1, x2
-            print(f'\niteration: {i}\nNOW CHECKING X1: X1 {x1} X2 {x2} dX1 {dx1} dX2 {dx2}')
-            if self.f(x1 + dx1,x2) < fx0:
-                x1 = x1+dx1
-                print('X1 UP:', x1)
-                check_x2()
-            elif self.f(x1 - dx1,x2) < fx0:
-                x1 = x1-dx1
-                print('X1 DOWN:',x1)
-                check_x2()
-            else:
-                check_x2()
+    def check_x2():
+        nonlocal dx1, dx2, eps, x1, x2, point
+        print(f'NOW CHECKING X2: X1 {x1} X2 {x2} dX1 {dx1} dX2 {dx2}')
+        if f(x1, x2 + dx2) < fx0:
+            x2 = x2 + dx2
+            print('X2 UP TO:', x2)
+        elif f(x1, x2 - dx2) < fx0:
+            x2 = x2 - dx2
+            print('X2 DOWN TO:', x2)
+        else:
+            if point['x1'] == x1 and dx1 >= dx2:
+                dx1 = dx1 / delta
+            dx2 = dx2 / delta
 
-        def check_x2():
-            """Check second coordinate move"""
+        if dx1 > eps and dx2 > eps:
+            if point['x1'] != x1 and point['x2'] != x2:
+                print('*ACCELERATION STEP ACTIVATED')
+                acc_step()
+            draw('black', 2)
+            hooke_jeeves(i, x1, x2, dx1, dx2)
+        else:
+            draw('red', 3)
 
-            nonlocal dx1,dx2, eps, x1, x2, point
-            print(f'NOW CHECKING X2: X1 {x1} X2 {x2} dX1 {dx1} dX2 {dx2}')
-            if self.f(x1 , x2 + dx2) < fx0:
-                x2 = x2 + dx2
-                print('X2 UP', x2)
-            elif self.f(x1 , x2 - dx2) < fx0:
-                x2 = x2 - dx2
-                print('X2 DOWN', x2)
-            else:
-                if point['x1'] == x1 and dx1 >= dx2:
-                    dx1 = dx1 / delta
-                dx2 = dx2 / delta
+    def acc_step():
+        nonlocal x1, x2, point
+        print(f'VALUES BEFORE STEP: X1 {x1} X2 {x2}')
+        if f(x1, x2) > f((x1 - point['x1']) * acc + point['x1'],
+                         (x1 - point['x2']) * acc + point['x2']):
+            x1 = (x1 - point['x1']) * acc + point['x1']
+            x2 = (x2 - point['x2']) * acc + point['x2']
+            print('BOTH WAS CHANGED')
+        elif f(x1, x2) > f((x1 - point['x1']) * acc + point['x1'], x2):
+            x1 = (x1 - point['x1']) * acc + point['x1']
+            print('X1 WAS CHANGED')
+        elif f(x1, x2) > f(x1, (x1 - point['x2']) * acc + point['x2']):
+            x2 = (x2 - point['x2']) * acc + point['x2']
+            print('X2 WAS CHANGED')
+        print(f'*VALUES AFTER STEP: X1 {x1} X2 {x2}')
 
-            if dx1 > eps and dx2 > eps:
-                if point['x1'] != x1 and point['x2'] != x2:
-                    print('*ACCELERATION STEP ACTIVATED')
-                    acc_step()
-                draw('black', 2)
-                self.hooke_jeeves(i, x1, x2, dx1, dx2)
-            else:
-                draw('red', 3)
+    def draw(color: str, order: int):
+        print(f'DRAW POINT {x1} {x2}')
 
-        def acc_step():
-            """Acceleration step"""
+        ax.set_xlim(point['x1']-1*dx1*2,point['x1']+1*dx1*2)
+        ax.set_ylim(point['x2']-1*dx2*2,point['x2']+1*dx2*2)
 
-            nonlocal x1,x2,point
-            print(f'VALUES BEFORE STEP: X1 {x1} X2 {x2}')
-            if self.f(x1,x2) > self.f(  (x1-point['x1']) * acc + point['x1'],
-                                        (x1-point['x2'])* acc +point['x2']):
-                x1 = (x1-point['x1']) * acc + point['x1']
-                x2 = (x2-point['x2']) * acc + point['x2']
-                print('BOTH WAS CHANGED')
-            elif self.f(x1,x2) > self.f(  (x1-point['x1']) * acc + point['x1'],  x2):
-                x1 = (x1-point['x1']) * acc + point['x1']
-                print('X1 WAS CHANGED')
-            elif self.f(x1,x2) > self.f(  x1,  (x1-point['x2']) * acc +point['x2']):
-                x2 = (x2-point['x2']) * acc + point['x2']
-                print('X2 WAS CHANGED')
-            print(f'*VALUES AFTER STEP: X1 {x1} X2 {x2}')
+        fig.canvas.draw()
+        fig.canvas.flush_events()
 
-        def draw(color: str, order: int):
-            """Draw new point and line to it"""
+        plt.scatter(x1, x2, color=color, zorder=order)
+        plt.plot([x1, point['x1']], [x2, point['x2']],
+                 color=color, linewidth='.5')
 
-            nonlocal x1,x2,point
-            print(f'DRAW POINT {x1} {x2}')
-            plt.scatter(x1, x2, color=color, zorder=order)
-            plt.plot([ x1 , point['x1'] ], [ x2 , point['x2'] ], color=color, linewidth='.5')
+        plt.draw()
+        time.sleep(0.4)
 
-        if dx1 > eps and dx1 > eps:
-            check_x1()
+    if dx1 > eps and dx1 > eps:
+        check_x1()
 
-function = Solution()
-function.hooke_jeeves()
-function.showplot()
-print(f'Total working time: {total_time}s')
+hooke_jeeves()
+plt.ioff()
+plt.show()
