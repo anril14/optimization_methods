@@ -2,29 +2,38 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-var = input('Choose your variant, available:\n0(test)\n1\n')
+# Variant choose
+var = input('Choose your variant, available:\n0(test), 1, 3\n')
 match var:
     case '0':
         def f(x1, x2):
-            return 3 * x1 ** 2 - 4 * x1 + x2 ** 2 - x1 * x2
+            return 3*x1**2 - 4*x1 + x2**2 - x1*x2
         def df1(x1, x2):
             return 6 * x1 - x2 - 4
         def df2(x1, x2):
             return -x1 + 2 * x2
         x1, x2 = 2, 3
-
     case '1':
         def f(x1, x2):
-            return 4 * x1 ** 2 + 5 * x2 ** 2 - 3 * x1 * x2 + 9 * x1 - 2 * x2 + 5
+            return 4*x1**2 + 5*x2**2 - 3*x1*x2 + 9*x1 - 2*x2 + 5
         def df1(x1, x2):
             return 8 * x1 - 3 * x2 + 9
         def df2(x1, x2):
             return -3 * x1 + 10 * x2 - 2
         x1, x2 = 2, 3
+    case '3':
+        def f(x1, x2):
+            return x1**2 + 3*x2**2 + 3*x1*x2 - x1 - 2*x2 - 1
+        def df1(x1, x2):
+            return 2*x1 + 3*x2 - 1
+        def df2(x1, x2):
+            return 3*x1 + 6*x2 - 2
+        x1, x2 = 3, 3
     case _:
         print('Incorrect input')
         exit()
 
+# Plot settings
 x1_space = np.linspace(-20,20,40)
 x2_space = np.linspace(-20,20,40)
 x1_grid, x2_grid = np.meshgrid(x1_space, x2_space)
@@ -36,9 +45,7 @@ fig, ax = plt.subplots(figsize = (10,7))
 # "tight" layout - more usable space but some bugs with text
 # fig.set_layout_engine("tight")
 ax.contour(x1_space,x2_space,x3_space,20,zorder = 1)
-
 ax.grid(True)
-
 plt.axhline(0, color='black', linewidth=1, zorder=2)
 plt.axvline(0, color='black', linewidth=1, zorder=2)
 
