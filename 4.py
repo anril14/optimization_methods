@@ -1,3 +1,4 @@
+import math
 import time
 import matplotlib.pyplot as plt
 import numpy as np
@@ -49,7 +50,7 @@ ax.grid(True)
 plt.axhline(0, color='black', linewidth=1, zorder=2)
 plt.axvline(0, color='black', linewidth=1, zorder=2)
 
-def gradient(i = -1, x1 = 0, x2 = 0, alpha = 0.5, is_next_i = True, eps = 0.01):
+def gradient(i = -1, x1 = 0, x2 = 0, alpha = 0.5, is_next_i = True, eps = 1):
     old_point = dict({'x1': x1, 'x2': x2})
     x1 = x1 - alpha * df1(old_point['x1'], old_point['x2'])
     x2 = x2 - alpha * df2(old_point['x1'], old_point['x2'])
@@ -79,13 +80,13 @@ def gradient(i = -1, x1 = 0, x2 = 0, alpha = 0.5, is_next_i = True, eps = 0.01):
         fig.canvas.draw()
         fig.canvas.flush_events()
         plt.draw()
-        time.sleep(0.02)
+        time.sleep(0.05)
 
-    print(f'\niteration: {i}\n')
+    print(f'\niteration: {i+1}\n')
     print(f'OLD X1 {old_point['x1']} X2 {old_point['x2']}')
     print(f'NEW X1 {x1} X2 {x2}')
 
-    if abs(x1-old_point['x1']) > eps or abs(x2-old_point['x2']) > eps:
+    if (math.sqrt(x1**2+old_point['x1']**2) > eps or math.sqrt(x2**2+old_point['x2']**2) > eps) and alpha > 0.1:
         if i == -1:
             print(f'DRAW POINT {old_point['x1']} {old_point['x2']}')
             print(f'DRAW POINT {x1} {x2}')
