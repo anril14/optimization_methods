@@ -7,46 +7,57 @@ var = input('Choose your variant, available:\n0(test), 1, 3, 5, 7\n')
 match var:
     case '0':
         def f(x1, x2):
-            return (x1 - 7)**2 + (x2 / 3 - 4)**2
+            return (x1 - 7) ** 2 + (x2 / 3 - 4) ** 2
+
+
         x1, x2 = 1, 1
     case '1':
         def f(x1, x2):
-            return 4*x1**2 + 5*x2**2 - 3*x1*x2 + 9*x1 - 2*x2 + 5
+            return 4 * x1 ** 2 + 5 * x2 ** 2 - 3 * x1 * x2 + 9 * x1 - 2 * x2 + 5
+
+
         x1, x2 = 2, 3
     case '3':
         def f(x1, x2):
-            return x1**2 + 3*x2**2 + 3*x1*x2 - x1 - 2*x2 - 1
+            return x1 ** 2 + 3 * x2 ** 2 + 3 * x1 * x2 - x1 - 2 * x2 - 1
+
+
         x1, x2 = 3, 3
     case '5':
         def f(x1, x2):
-            return 6*x1**2 + x2**2 - x1*x2 + 4*x1 - 8*x2 + 1
+            return 6 * x1 ** 2 + x2 ** 2 - x1 * x2 + 4 * x1 - 8 * x2 + 1
+
+
         x1, x2 = 2, 2
     case '7':
         def f(x1, x2):
-            return 2*x1**2 + 4*x2**2 - 5*x1*x2 + 11*x1 + 8*x2 - 3
+            return 2 * x1 ** 2 + 4 * x2 ** 2 - 5 * x1 * x2 + 11 * x1 + 8 * x2 - 3
+
+
         x1, x2 = 1, 1
     case _:
         print('Incorrect input')
         exit()
 
 # Plot settings
-x1_space = np.linspace(-20,20,40)
-x2_space = np.linspace(-20,20,40)
+x1_space = np.linspace(-20, 20, 40)
+x2_space = np.linspace(-20, 20, 40)
 x1_grid, x2_grid = np.meshgrid(x1_space, x2_space)
 x3_space = f(x1_grid, x2_grid)
 
 plt.ion()
-fig, ax = plt.subplots(figsize = (10,7))
+fig, ax = plt.subplots(figsize=(10, 7))
 
 # "tight" layout - more usable space but some bugs with text
 # fig.set_layout_engine("tight")
-ax.contour(x1_space,x2_space,x3_space,20,zorder = 1)
+ax.contour(x1_space, x2_space, x3_space, 20, zorder=1)
 ax.grid(True)
 plt.axhline(0, color='black', linewidth=1, zorder=2)
 plt.axvline(0, color='black', linewidth=1, zorder=2)
 
-def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
-                 is_next_i = True, delta = 2.0, acc_ratio = 2.2, eps=0.001):
+
+def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1=1.0, dx2=1.0,
+                 is_next_i=True, delta=2.0, acc_ratio=2.2, eps=0.001):
     old_point = dict({'x1': x1, 'x2': x2})
     fx0 = f(x1, x2)
 
@@ -107,8 +118,8 @@ def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
         print(f'DRAW POINT {x1} {x2}')
 
         # New zoom
-        ax.set_xlim(old_point['x1']-1*dx1*2,old_point['x1']+1*dx1*2)
-        ax.set_ylim(old_point['x2']-1*dx2*2,old_point['x2']+1*dx2*2)
+        ax.set_xlim(old_point['x1'] - 1 * dx1 * 2, old_point['x1'] + 1 * dx1 * 2)
+        ax.set_ylim(old_point['x2'] - 1 * dx2 * 2, old_point['x2'] + 1 * dx2 * 2)
 
         # For canvas changing
         fig.canvas.draw()
@@ -116,14 +127,14 @@ def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
 
         plt.scatter(x1, x2, color=color, zorder=order, label=label)
         if is_text:
-            plt.text(x1, x2, str(i+1), zorder = order+1)
+            plt.text(x1, x2, str(i + 1), zorder=order + 1)
         plt.plot([x1, old_point['x1']], [x2, old_point['x2']],
                  color=color, linewidth='.5')
 
         plt.draw()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
-    #Delta condition
+    # Delta condition
     if dx1 > eps and dx1 > eps:
         # Checking for delta changes only
         if is_next_i:
@@ -140,10 +151,11 @@ def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1 = 1.0, dx2 = 1.0,
         check_x1()
 
         if is_next_i:
-            draw('gray','', 2, True)
+            draw('gray', '', 2, True)
         hooke_jeeves(i, x1, x2, dx1, dx2, is_next_i)
     else:
         draw('red', 'End Point', 3, False)
+
 
 hooke_jeeves(x1=x1, x2=x2)
 plt.ioff()
