@@ -69,7 +69,7 @@ plt.axhline(0, color='black', linewidth=1, zorder=2)
 plt.axvline(0, color='black', linewidth=1, zorder=2)
 
 
-def gradient(i=-1, x1=0, x2=0, alpha=0.5, is_next_i=True, eps=1):
+def gradient(i=-1, x1=0, x2=0, alpha=0.5, is_next_i=True, eps=0.01):
     old_point = dict({'x1': x1, 'x2': x2})
     x1 = x1 - alpha * df1(old_point['x1'], old_point['x2'])
     x2 = x2 - alpha * df2(old_point['x1'], old_point['x2'])
@@ -86,11 +86,11 @@ def gradient(i=-1, x1=0, x2=0, alpha=0.5, is_next_i=True, eps=1):
         print(f'DRAW POINT {x1} {x2}')
 
         # New zoom
-        ax.set_xlim(old_point['x1'] - 1 * alpha * 2, old_point['x1'] + 1 * alpha * 2)
-        ax.set_ylim(old_point['x2'] - 1 * alpha * 2, old_point['x2'] + 1 * alpha * 2)
+        ax.set_xlim(x1 - 1 * alpha * 2, x1 + 1 * alpha * 2)
+        ax.set_ylim(x2 - 1 * alpha * 2, x2 + 1 * alpha * 2)
 
         plt.plot([x1, old_point['x1']], [x2, old_point['x2']],
-                 color=color, linewidth='.5')
+                 color='gray', linewidth='.5')
         plt.scatter(x1, x2, color=color, zorder=order, label=label)
         if is_text:
             plt.text(x1, x2, str(i + 1), zorder=order + 1)
@@ -101,12 +101,13 @@ def gradient(i=-1, x1=0, x2=0, alpha=0.5, is_next_i=True, eps=1):
         plt.draw()
         time.sleep(0.05)
 
-    print(f'\niteration: {i + 1}\n')
+    print(f'\niteration: {i + 2}\n')
     print(f'OLD X1 {old_point['x1']} X2 {old_point['x2']}')
     print(f'NEW X1 {x1} X2 {x2}')
 
-    if (math.sqrt(x1 ** 2 + old_point['x1'] ** 2) > eps or math.sqrt(
-            x2 ** 2 + old_point['x2'] ** 2) > eps) and alpha > 0.1:
+    print('EPS',math.sqrt((x1 - old_point['x1']) ** 2 + (x2 - old_point['x2']) ** 2))
+    if  math.sqrt( (x1 - old_point['x1']) ** 2 + (x2 - old_point['x2']) ** 2 ) > eps and alpha > 0.05:
+
         if i == -1:
             print(f'DRAW POINT {old_point['x1']} {old_point['x2']}')
             print(f'DRAW POINT {x1} {x2}')
@@ -131,7 +132,8 @@ def gradient(i=-1, x1=0, x2=0, alpha=0.5, is_next_i=True, eps=1):
 
         gradient(i, x1, x2, alpha, is_next_i)
     else:
-        draw(old_point['x1'], old_point['x2'], 'red', 'End Point', 3, False)
+        i += 1
+        draw(x1, x2, 'red', 'End Point', 3, True)
 
 
 gradient(x1=x1, x2=x2)
