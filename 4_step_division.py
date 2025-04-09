@@ -85,7 +85,7 @@ def gradient(i=-1, x1=0.0, x2=0.0, alpha=1.0, is_next_i=True, eps=0.01) -> None:
             draw(i=i, x1=x1, x2=x2, old_point=old_point, alpha=alpha, color='gray',
                  label='', order=2, first=False)
 
-        gradient(i, x1, x2, alpha, is_next_i)
+        return gradient(i, x1, x2, alpha, is_next_i)
     else:
         i += 1
         draw(i=i, x1=x1, x2=x2, old_point=old_point, alpha=alpha, color='red',

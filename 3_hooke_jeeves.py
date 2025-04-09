@@ -135,7 +135,7 @@ def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1=1.0, dx2=1.0,
         time.sleep(0.05)
 
     # Delta condition
-    if dx1 > eps and dx1 > eps:
+    if dx1 > eps and dx2 > eps:
         # Checking for delta changes only
         if is_next_i:
             if i == -1:
@@ -152,7 +152,7 @@ def hooke_jeeves(i=-1, x1=2.0, x2=3.0, dx1=1.0, dx2=1.0,
 
         if is_next_i:
             draw('gray', '', 2, True)
-        hooke_jeeves(i, x1, x2, dx1, dx2, is_next_i)
+        return hooke_jeeves(i, x1, x2, dx1, dx2, is_next_i)
     else:
         draw('red', 'End Point', 3, False)
 
