@@ -8,7 +8,6 @@ from variants_4 import get_variant
 var = input('Choose your variant, available:\n0(test), 1, 3, 5, 7\n')
 f, df1, df2, x1, x2 = get_variant(var)
 
-
 def half_count(x1, x2, x1_start, x2_start, *, i=-1, a=0.1, b=3, rounding_value=3) -> float:
     eps = 10 ** - rounding_value
     while (abs(b) - abs(a)) > eps:
@@ -32,21 +31,18 @@ def half_count(x1, x2, x1_start, x2_start, *, i=-1, a=0.1, b=3, rounding_value=3
 
 
 def gradient(i=-1, x1=0.0, x2=0.0, alpha=1.0, is_next_i=True, eps=0.01) -> None:
+    alpha = half_count(x1=x1, x2=x2,
+                       x1_start=df1(x1, x2),
+                       x2_start=df2(x1, x2))
+    print(f'NEW ALPHA: {alpha}')
     old_point = dict({'x1': x1, 'x2': x2})
-    x1 = x1 - alpha * df1(old_point['x1'], old_point['x2'])
-    x2 = x2 - alpha * df2(old_point['x1'], old_point['x2'])
+    x1 = x1 - alpha * df1(x1, x2)
+    x2 = x2 - alpha * df2(x1, x2)
 
     def check() -> None:
-        nonlocal alpha, x1, x2, is_next_i
-
+        nonlocal is_next_i
         if f(x1, x2) >= f(old_point['x1'], old_point['x2']):
-            x1 = old_point['x1']
-            x2 = old_point['x2']
             is_next_i = False
-        alpha = half_count(x1=x1, x2=x2,
-                           x1_start=df1(x1, x2),
-                           x2_start=df2(x1, x2))
-        print(f'NEW ALPHA: {alpha}')
 
     print(f'\niteration: {i + 2}\n')
     print(f'OLD X1: {old_point['x1']} X2 {old_point['x2']}')
