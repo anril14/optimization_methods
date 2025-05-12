@@ -7,11 +7,11 @@ ERROR_MESSAGE_2 = 'Несовпадение строки матрицы'
 
 def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> None:
     # ПроверОчка
-    assert len(distances) == n - 1, ERROR_MESS_1
+    assert len(distances) == n, ERROR_MESSAGE_1
     for i, item in enumerate(distances):
-        assert len(item) == n - 1 - i, ERROR_MESS_2
+        assert len(item) == n - 1, ERROR_MESSAGE_2
         pass
-    pheromones = [[0.2 for i in range(n - 1 - j)] for j in range(n - 1)]
+    pheromones = [[0.2 for i in range(n - 1)] for j in range(n)]
     print(f'\nИсходная матрица феромонов: {pheromones}')
     print(f'Матрица расстояний: {distances}\n')
 
@@ -42,8 +42,9 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
 
             # Подсчет prob_sum
             for i in possible:
-                # Нужная ячейка в таблице (т.к. задача симметричная)
-                in_table = [j, i - j - 1] if j < i else [i, j - i - 1]
+                # Нужная ячейка в таблице
+                in_table = [j, i - 1] if j < i else [j, i]
+                # print(in_table)
                 # Актуальные дистанция и феромон для возможной ячейки
                 actual_distance = distances[in_table[0]][in_table[1]]
                 actual_pheromone = pheromones[in_table[0]][in_table[1]]
@@ -52,7 +53,8 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
                 prob_sum += actual_distance ** a + actual_pheromone ** b
             # Подсчет prob
             for i in possible:
-                in_table = [j, i - j - 1] if j < i else [i, j - i - 1]
+                in_table = [j, i - 1] if j < i else [j, i]
+                # print(in_table)
                 actual_distance = distances[in_table[0]][in_table[1]]
                 actual_pheromone = pheromones[in_table[0]][in_table[1]]
                 prob.append(((actual_distance ** a + actual_pheromone ** b) / prob_sum) + prob[-1])
@@ -73,7 +75,7 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
             # print(j, pick)
 
             # Нужная ячейка в таблице (также как сверху, только для выбранного)
-            in_table = [j, pick - j - 1] if j < pick else [pick, j - pick - 1]
+            in_table = [j, pick - 1] if j < pick else [j, pick]
             # print(in_table)
             # print('В таблице:', distances[in_table[0]][in_table[1]])
             # print('Феромон:', pheromones[in_table[0]][in_table[1]], '\n')
@@ -89,15 +91,13 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
 
         # Добавление последнего перехода
         route.append(start)
-        in_table = [route[-2], route[-1] - route[-2] - 1] if route[-2] < route[-1] else [route[-1],
-                                                                                         route[-2] - route[-1] - 1]
+        in_table = [route[-2], route[-1] - 1] if route[-2] < route[-1] else [route[-2], route[-1]]
         route_len += distances[in_table[0]][in_table[1]]
         routes.append([in_table[0], in_table[1]])
 
         # print(f'Координаты переходов маршрута: {routes}')
         # print(f'Длина маршрута: {route_len}')
         # print(f'Маршрут: {route}\n')
-
 
         # Обновление матрицы изменения феромонов
         for i in routes:
@@ -107,14 +107,14 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
         return route_len, route
 
     for i in range(generations):
-        delta_pheromones = [[0 for i in range(n - j - 1)] for j in range(n - 1)]
+        delta_pheromones = [[0 for i in range(n - 1)] for j in range(n)]
         for i in range(n):
             all_routes.append(passage(i))
         for i, item in enumerate(delta_pheromones):
             for j, jtem in enumerate(item):
                 pheromones[i][j] = pheromones[i][j] * p + jtem
 
-    all_routes.sort(key = lambda element: element[0])
+    all_routes.sort(key=lambda element: element[0])
     print(f'Конечная матрица феромонов: {pheromones}\n')
     print('Лучшие решения:')
     for i in range(10):
@@ -122,4 +122,6 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
 
 
 if __name__ == '__main__':
-    ant(5, [[38, 74, 59, 45], [46, 61, 72], [49, 85], [42]], 1, 1, 4, 0.9, 100)
+    ant(5, [[4, 5, 7, 5], [8, 5, 6, 6], [3, 5, 9, 6], [3, 5, 6, 2], [6, 2, 3, 8]], 1, 1, 4, 0.9, 150)
+    # ant(5, [[38, 74, 59, 45], [38, 46, 61, 72], [74, 46, 49, 85], [59, 61, 49, 42], [45, 72, 85, 42]], 1, 1, 4, 0.9, 150)
+    # ant(4, [[23, 25, 19], [19, 16, 18], [25, 10, 10], [9, 4, 13]], 1, 1, 4, 0.9, 150)
