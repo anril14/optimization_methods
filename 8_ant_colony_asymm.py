@@ -46,19 +46,19 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
                 in_table = [j, i - 1] if j < i else [j, i]
                 # print(in_table)
                 # Актуальные дистанция и феромон для возможной ячейки
-                actual_distance = distances[in_table[0]][in_table[1]]
+                actual_closeness = 1 / distances[in_table[0]][in_table[1]]
                 actual_pheromone = pheromones[in_table[0]][in_table[1]]
                 # print(
-                #     f'Для {i}:\nДистанция:{actual_distance}\nФеромон:{actual_pheromone}\n')
-                prob_sum += actual_distance ** a + actual_pheromone ** b
+                #     f'Для {i}:\nБлизость:{actual_closeness}\nФеромон:{actual_pheromone}\n')
+                prob_sum += actual_closeness ** a + actual_pheromone ** b
             # Подсчет prob
             for i in possible:
                 in_table = [j, i - 1] if j < i else [j, i]
                 # print(in_table)
-                actual_distance = distances[in_table[0]][in_table[1]]
+                actual_closeness = 1 / distances[in_table[0]][in_table[1]]
                 actual_pheromone = pheromones[in_table[0]][in_table[1]]
-                prob.append(((actual_distance ** a + actual_pheromone ** b) / prob_sum) + prob[-1])
-            #     print(f'Вероятность перехода для {i}: {(actual_distance ** a + actual_pheromone ** b) / prob_sum}')
+                prob.append(((actual_closeness ** a + actual_pheromone ** b) / prob_sum) + prob[-1])
+            #     print(f'Вероятность перехода для {i}: {(actual_closeness ** a + actual_pheromone ** b) / prob_sum}')
             # print(prob)
 
             # Выбор случайного числа на последовательности
@@ -122,6 +122,6 @@ def ant(n: int, distances: list, a, b, q: int, p: float, generations: int) -> No
 
 
 if __name__ == '__main__':
-    ant(5, [[4, 5, 7, 5], [8, 5, 6, 6], [3, 5, 9, 6], [3, 5, 6, 2], [6, 2, 3, 8]], 1, 1, 4, 0.9, 150)
+    # ant(5, [[4, 5, 7, 5], [8, 5, 6, 6], [3, 5, 9, 6], [3, 5, 6, 2], [6, 2, 3, 8]], 1, 1, 4, 0.9, 150)
     # ant(5, [[38, 74, 59, 45], [38, 46, 61, 72], [74, 46, 49, 85], [59, 61, 49, 42], [45, 72, 85, 42]], 1, 1, 4, 0.9, 150)
-    # ant(4, [[23, 25, 19], [19, 16, 18], [25, 10, 10], [9, 4, 13]], 1, 1, 4, 0.9, 150)
+    ant(4, [[23, 25, 19], [19, 16, 18], [25, 10, 10], [9, 4, 13]], 1, 1, 4, 0.9, 10)

@@ -13,7 +13,7 @@ x1_space = np.linspace(-20, 20, 40)
 x2_space = np.linspace(-20, 20, 40)
 x1_grid, x2_grid = np.meshgrid(x1_space, x2_space)
 x3_space = f(x1_grid, x2_grid)
-''
+
 # Dynamic drawing
 plt.ion()
 fig, ax = plt.subplots(figsize=(10, 7))
@@ -71,22 +71,26 @@ def half_count(x1, x2, x1_start, x2_start, *, i=-1, a=0.1, b=3, rounding_value=3
         return (a + b) / 2
 
 
-def gradient(i=-1, x1=0.0, x2=0.0, alpha=1.0, is_next_i=True, eps=0.01) -> None:
+def gradient(i=-1, x1=0.0, x2=0.0, prev_draw_point=None, alpha=1.0, is_next_i=True, eps=0.01) -> None:
+    if prev_draw_point is None:
+        prev_draw_point = {}
+
+    if is_next_i or i == -1:
+        prev_draw_point = dict({'x1': x1, 'x2': x2})
     old_point = dict({'x1': x1, 'x2': x2})
-    x1 = x1 - alpha * df1(old_point['x1'], old_point['x2'])
-    x2 = x2 - alpha * df2(old_point['x1'], old_point['x2'])
+
+    alpha = half_count(x1=x1, x2=x2,
+                       x1_start=df1(x1, x2),
+                       x2_start=df2(x1, x2))
+    print(f'NEW ALPHA: {alpha}')
+
+    x1 = x1 - alpha * df1(x1, x2)
+    x2 = x2 - alpha * df2(x1, x2)
 
     def check() -> None:
-        nonlocal alpha, x1, x2, is_next_i
-
+        nonlocal is_next_i
         if f(x1, x2) >= f(old_point['x1'], old_point['x2']):
-            x1 = old_point['x1']
-            x2 = old_point['x2']
             is_next_i = False
-        alpha = half_count(x1=x1, x2=x2,
-                           x1_start=df1(x1, x2),
-                           x2_start=df2(x1, x2))
-        print(f'NEW ALPHA: {alpha}')
 
     print(f'\niteration: {i + 2}\n')
     print(f'OLD X1: {old_point['x1']} X2 {old_point['x2']}')
@@ -97,7 +101,8 @@ def gradient(i=-1, x1=0.0, x2=0.0, alpha=1.0, is_next_i=True, eps=0.01) -> None:
             and alpha > 0.05):
 
         if i == -1 and is_next_i:
-            draw(i=i, x1=old_point['x1'], x2=old_point['x2'], old_point=old_point, alpha=alpha, color='blue',
+            draw(i=i, x1=prev_draw_point['x1'], x2=prev_draw_point['x2'], old_point=prev_draw_point, alpha=alpha,
+                 color='blue',
                  label='Start Point', order=3, first=True)
 
         is_next_i = True
@@ -106,13 +111,13 @@ def gradient(i=-1, x1=0.0, x2=0.0, alpha=1.0, is_next_i=True, eps=0.01) -> None:
         # Checking to draw for delta changes only
         if is_next_i:
             i += 1
-            draw(i=i, x1=x1, x2=x2, old_point=old_point, alpha=alpha, color='gray',
+            draw(i=i, x1=x1, x2=x2, old_point=prev_draw_point, alpha=alpha, color='gray',
                  label='', order=2, first=False)
 
-        return gradient(i, x1, x2, alpha, is_next_i)
+        return gradient(i, x1, x2, prev_draw_point, alpha, is_next_i)
     else:
         i += 1
-        draw(i=i, x1=x1, x2=x2, old_point=old_point, alpha=alpha, color='red',
+        draw(i=i, x1=x1, x2=x2, old_point=prev_draw_point, alpha=alpha, color='red',
              label='End Point', order=3, first=False)
 
 

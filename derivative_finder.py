@@ -1,8 +1,8 @@
 # Find the derivative
 from sympy import *
 
-x1, x2 = symbols('x1 x2')
-expr = x1 ** 2 + 3 * x2 ** 2 + 3 * x1 * x2 - x1 - 2 * x2 - 1
+x1, x2, r = symbols('x1 x2 r')
+expr = 4 * x1 ** 2 - x1 * x2 + 5 * x2 ** 2 + 3
 print("Expression : {}".format(expr))
 
 # Use sympy.Derivative() method
